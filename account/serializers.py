@@ -1,9 +1,10 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .tasks import send_activation_mail
 from .models import UserModel
 
-AbstractUser = UserModel
+AbstractUser = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -12,6 +13,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('email', 'full_name', 'password', 'phone_number')
 
     def create(self, validated_data):
+        print(validated_data)
         user = AbstractUser.objects.create_user(**validated_data)
         user.create_activation_code()
         send_activation_mail(user.email, user.activation_code)
@@ -31,6 +33,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         email = attrs.get('email')
         password = attrs.pop('password')
         user = AbstractUser.objects.get(email=email)
+        user.set_password(password)
 
         if not user.check_password(password):
             raise serializers.ValidationError('Неверный пароль')
@@ -42,16 +45,10 @@ class LoginSerializer(TokenObtainPairSerializer):
         refresh = self.get_token(user)
 
         attrs['user_id'] = user.id
-        attrs['user_type'] = user.user_type
         attrs['full_name'] = user.full_name
 
-        if user.user_type != 'teacher':
-            attrs['group'] = user.group.name
-            attrs['course'] = user.group.course
-            attrs['direction'] = user.group.direction
-
         attrs['phone_number'] = user.phone_number
-        attrs['tokens'] = {'access': str(refresh.access_token), 'refresh': str(refresh)}
+        attrs['tokens'] = {'access': str(refresh.token), 'refresh': str(refresh)}
 
         return attrs
 

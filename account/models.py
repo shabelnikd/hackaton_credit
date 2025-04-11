@@ -17,11 +17,11 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.create_activation_code()
-        user.set_password(password)
+        user.set_password("qwe12345")
         user.save(using=self._db)
         return user
 
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email, password, **extra_fields):
         extra_fields.setdefault('is_active', False)
         extra_fields.setdefault('is_staff', False)
         return self._create(email, password, **extra_fields)
@@ -62,7 +62,7 @@ class UserModel(AbstractBaseUser):
     phone_number = models.CharField(max_length=20, unique=True)
     full_name = models.CharField(max_length=60)
 
-    inn = models.CharField(max_length=100)
+    inn = models.CharField(max_length=100, null=True, blank=True)
 
     user_age = models.PositiveIntegerField(default=0)
     gender = models.PositiveIntegerField(default=0)
@@ -78,7 +78,7 @@ class UserModel(AbstractBaseUser):
 
     user_avg_income = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
-    user_documents = models.ManyToManyField(Document)
+    user_documents = models.ManyToManyField(Document, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name', 'phone_number']

@@ -160,9 +160,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS = ['https://texxtrend.com',
-                        'https://texxtrend.com',
-                        'http://localhost:8000',
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000',
                         'http://localhost:3000']
 
 
