@@ -48,7 +48,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         attrs['full_name'] = user.full_name
 
         attrs['phone_number'] = user.phone_number
-        attrs['tokens'] = {'access': str(refresh.token), 'refresh': str(refresh)}
+        attrs['tokens'] = {'access': str(refresh.access_token), 'refresh': str(refresh)}
 
         return attrs
 
